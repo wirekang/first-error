@@ -5,9 +5,10 @@ import (
 	"os"
 	"runtime/debug"
 
-	"github.com/pkg/errors"
+	errors2 "github.com/pkg/errors"
 )
 
+// RecoverAndPrintAndExit prints stack trace and exit with exitCode if recover() returns non-nil value.
 func RecoverAndPrintAndExit(exitCode int) {
 	cause := recover()
 	if cause != nil {
@@ -16,6 +17,7 @@ func RecoverAndPrintAndExit(exitCode int) {
 	}
 }
 
+// RecoverCallback calls cb if recover() returns non-nil value.
 func RecoverCallback(cb func(string)) {
 	cause := recover()
 	if cause != nil {
@@ -23,6 +25,7 @@ func RecoverCallback(cb func(string)) {
 	}
 }
 
+// StackTrace returns stack trace when error first wrapped, or returns "" if err is nil.
 func StackTrace(err interface{}) (str string) {
 	if err != nil {
 		message := fmt.Sprintf("%v", err)
@@ -31,11 +34,11 @@ func StackTrace(err interface{}) (str string) {
 		if ok {
 			for {
 				stackTracer, ok := err.(interface {
-					StackTrace() errors.StackTrace
+					StackTrace() errors2.StackTrace
 				})
 				if ok {
 					st = fmt.Sprintf("%+v\n", stackTracer.StackTrace())
-					err = errors.Unwrap(err)
+					err = errors2.Unwrap(err)
 					if err != nil {
 						continue
 					}
