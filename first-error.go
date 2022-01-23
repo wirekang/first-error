@@ -2,14 +2,25 @@ package ferr
 
 import (
 	"fmt"
+	"os"
 	"runtime/debug"
 
 	"github.com/pkg/errors"
 )
 
-func Recover(cb func(string)) {
+func RecoverAndPrintAndExit(exitCode int) {
 	cause := recover()
-	cb(StackTrace(cause))
+	if cause != nil {
+		fmt.Println(StackTrace(cause))
+		os.Exit(exitCode)
+	}
+}
+
+func RecoverCallback(cb func(string)) {
+	cause := recover()
+	if cause != nil {
+		cb(StackTrace(cause))
+	}
 }
 
 func StackTrace(err interface{}) (str string) {
