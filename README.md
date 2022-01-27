@@ -28,7 +28,7 @@ ferr.StackTrace(err) // error1234 \n\n StackTrace: \n...
 https://github.com/wirekang/mouseable/blob/d3c97367718aef3f17de4a38412d8dc7e9a88f4c/internal/logic/logic.go#L80
 
 ```
-defer ferr.Recover(
+defer ferr.RecoverCallback(
 		func(msg string) {
 			// Do something with msg.
 		},
