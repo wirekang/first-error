@@ -37,7 +37,7 @@ func StackTrace(err interface{}) (str string) {
 					StackTrace() errors2.StackTrace
 				})
 				if ok {
-					st = fmt.Sprintf("%+v\n", stackTracer.StackTrace())
+					st = fmt.Sprintf("%+v", stackTracer.StackTrace())
 					err = errors2.Unwrap(err)
 					if err != nil {
 						continue
@@ -51,7 +51,7 @@ func StackTrace(err interface{}) (str string) {
 			st = string(debug.Stack())
 		}
 
-		str = fmt.Sprintf("%s\n\nStackTrace:\n%s", message, st)
+		str = fmt.Sprintf("%sStackTrace:\n%s\n", message, st)
 	}
 	return
 }
