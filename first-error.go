@@ -51,7 +51,7 @@ func StackTrace(err interface{}) (str string) {
 			st = string(debug.Stack())
 		}
 
-		str = fmt.Sprintf("%sStackTrace:\n%s\n", message, st)
+		str = fmt.Sprintf("%s\n%s\n", message, st)
 	}
 	return
 }
