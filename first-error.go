@@ -5,7 +5,7 @@ import (
 	"os"
 	"runtime/debug"
 
-	errors2 "github.com/pkg/errors"
+	errors "github.com/pkg/errors"
 )
 
 // RecoverAndPrintAndExit prints stack trace and exit with exitCode if recover() returns non-nil value.
@@ -25,20 +25,34 @@ func RecoverCallback(cb func(string)) {
 	}
 }
 
-// StackTrace returns stack trace when error first wrapped, or returns "" if err is nil.
+// StackTrace is alias for StackTraceRange(err,0,0)
 func StackTrace(err interface{}) (str string) {
+	return StackTraceRange(err, 0, 0)
+}
+
+// StackTraceRange returns stack trace string with skip count.
+func StackTraceRange(err interface{}, skipNewest, skipOldest int) (str string) {
 	if err != nil {
 		message := fmt.Sprintf("%v", err)
 		err, ok := err.(error)
-		st := ""
+		stString := ""
 		if ok {
 			for {
 				stackTracer, ok := err.(interface {
-					StackTrace() errors2.StackTrace
+					StackTrace() errors.StackTrace
 				})
 				if ok {
-					st = fmt.Sprintf("%+v", stackTracer.StackTrace())
-					err = errors2.Unwrap(err)
+					st := stackTracer.StackTrace()
+					start := skipNewest
+					end := len(st) - skipOldest
+					if len(st) < start || len(st) < end || start > end {
+						st = nil
+					} else {
+						st = st[start:end]
+					}
+
+					stString = fmt.Sprintf("%+v", st)
+					err = errors.Unwrap(err)
 					if err != nil {
 						continue
 					}
@@ -47,11 +61,11 @@ func StackTrace(err interface{}) (str string) {
 				break
 			}
 		}
-		if st == "" {
-			st = string(debug.Stack())
+		if stString == "" {
+			stString = string(debug.Stack())
 		}
 
-		str = fmt.Sprintf("%s\n%s\n", message, st)
+		str = fmt.Sprintf("%s\n%s\n", message, stString)
 	}
 	return
 }
