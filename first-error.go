@@ -25,13 +25,13 @@ func RecoverCallback(cb func(string)) {
 	}
 }
 
-// StackTrace is alias for StackTraceRange(err,0,0)
+// StackTrace is alias for StackTraceRange(err,0,100)
 func StackTrace(err interface{}) (str string) {
-	return StackTraceRange(err, 0, 0)
+	return StackTraceRange(err, 0, 100)
 }
 
-// StackTraceRange returns stack trace string with skip count.
-func StackTraceRange(err interface{}, skipNewest, skipOldest int) (str string) {
+// StackTraceRange returns stack trace with start/max frame range.
+func StackTraceRange(err interface{}, start, max int) (str string) {
 	if err != nil {
 		message := fmt.Sprintf("%v", err)
 		err, ok := err.(error)
@@ -43,9 +43,15 @@ func StackTraceRange(err interface{}, skipNewest, skipOldest int) (str string) {
 				})
 				if ok {
 					st := stackTracer.StackTrace()
-					start := skipNewest
-					end := len(st) - skipOldest
-					if len(st) < start || len(st) < end || start > end {
+					if start >= len(st) {
+						start = len(st) - 1
+					}
+
+					end := start + max
+					if end > len(st) {
+						end = len(st)
+					}
+					if start > end {
 						st = nil
 					} else {
 						st = st[start:end]
