@@ -9,19 +9,12 @@ import (
 )
 
 // RecoverAndPrintAndExit prints stack trace and exit with exitCode if recover() returns non-nil value.
-func RecoverAndPrintAndExit(exitCode int) {
+func RecoverAndPrintAndExit(errExitCode int) {
 	cause := recover()
 	if cause != nil {
+		fmt.Println(cause)
 		fmt.Println(StackTrace(cause))
-		os.Exit(exitCode)
-	}
-}
-
-// RecoverCallback calls cb if recover() returns non-nil value.
-func RecoverCallback(cb func(string)) {
-	cause := recover()
-	if cause != nil {
-		cb(StackTrace(cause))
+		os.Exit(errExitCode)
 	}
 }
 
