@@ -33,9 +33,7 @@ func StackTrace(err interface{}) (str string) {
 // StackTraceRange returns stack trace with start/max frame range.
 func StackTraceRange(err interface{}, start, max int) (str string) {
 	if err != nil {
-		message := fmt.Sprintf("%v", err)
 		err, ok := err.(error)
-		stString := ""
 		if ok {
 			for {
 				stackTracer, ok := err.(interface {
@@ -57,7 +55,7 @@ func StackTraceRange(err interface{}, start, max int) (str string) {
 						st = st[start:end]
 					}
 
-					stString = fmt.Sprintf("%+v", st)
+					str = fmt.Sprintf("%+v", st)
 					err = errors.Unwrap(err)
 					if err != nil {
 						continue
@@ -67,11 +65,9 @@ func StackTraceRange(err interface{}, start, max int) (str string) {
 				break
 			}
 		}
-		if stString == "" {
-			stString = string(debug.Stack())
+		if str == "" {
+			str = string(debug.Stack())
 		}
-
-		str = fmt.Sprintf("%s\n%s\n", message, stString)
 	}
 	return
 }
